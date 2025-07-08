@@ -37,5 +37,4 @@ final List<GetPage> appPages = [
     page: () => AskScreen(),
     transition: Transition.cupertino,
   ),
-
 ];

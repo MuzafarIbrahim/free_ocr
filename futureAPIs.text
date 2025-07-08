@@ -1,0 +1,353 @@
+npm install cloudmersive-convert-api-client cloudmersive-nlp-api-client
+
+import express from "express";
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import CloudmersiveOcrApiClient from "cloudmersive-ocr-api-client";
+import CloudmersiveConvertApiClient from "cloudmersive-convert-api-client";
+import CloudmersiveNlpApiClient from "cloudmersive-nlp-api-client";
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+app.use(express.raw({ type: 'application/octet-stream', limit: '50mb' }));
+
+// Configure Cloudmersive clients
+const defaultClient = CloudmersiveOcrApiClient.ApiClient.instance;
+defaultClient.authentications["Apikey"].apiKey = process.env.OCR_API_KEY;
+
+const convertClient = CloudmersiveConvertApiClient.ApiClient.instance;
+convertClient.authentications["Apikey"].apiKey = process.env.OCR_API_KEY;
+
+const nlpClient = CloudmersiveNlpApiClient.ApiClient.instance;
+nlpClient.authentications["Apikey"].apiKey = process.env.OCR_API_KEY;
+
+// Initialize API instances
+const ocrApi = new CloudmersiveOcrApiClient.ImageOcrApi();
+const convertDocApi = new CloudmersiveConvertApiClient.ConvertDocumentApi();
+const convertWebApi = new CloudmersiveConvertApiClient.ConvertWebApi();
+const editDocApi = new CloudmersiveConvertApiClient.EditDocumentApi();
+const nlpApi = new CloudmersiveNlpApiClient.LanguageDetectionApi();
+const sentimentApi = new CloudmersiveNlpApiClient.SentimentAnalysisApi();
+const extractApi = new CloudmersiveNlpApiClient.ExtractEntitiesApi();
+
+// ====== OCR ENDPOINT ======
+app.post("/api/ocr", (req, res) => {
+  const { imageName } = req.body;
+  if (!imageName) {
+    return res.status(400).json({ error: "Missing imageName in body" });
+  }
+
+  let imageFile;
+  try {
+    imageFile = fs.readFileSync(`./${imageName}`);
+  } catch (err) {
+    console.error("❌ File read error:", err.message);
+    return res.status(404).json({ error: "Image file not found" });
+  }
+
+  const opts = {
+    recognitionMode: "Advanced",
+    language: "ENG",
+    preprocessing: "Auto",
+  };
+
+  ocrApi.imageOcrPost(imageFile, opts, (error, data) => {
+    if (error) {
+      console.error("❌ OCR Error:", error);
+      return res.status(500).json({ error: "OCR failed", details: error });
+    }
+    console.log("✅ OCR Result:", data);
+    res.json(data);
+  });
+});
+
+// ====== DOCUMENT CONVERSION ENDPOINTS ======
+
+// Convert PDF to Word
+app.post("/api/convert/pdf-to-word", (req, res) => {
+  const { fileName } = req.body;
+  if (!fileName) {
+    return res.status(400).json({ error: "Missing fileName in body" });
+  }
+
+  let inputFile;
+  try {
+    inputFile = fs.readFileSync(`./${fileName}`);
+  } catch (err) {
+    console.error("❌ File read error:", err.message);
+    return res.status(404).json({ error: "File not found" });
+  }
+
+  convertDocApi.convertDocumentPdfToDocx(inputFile, (error, data) => {
+    if (error) {
+      console.error("❌ PDF to Word conversion error:", error);
+      return res.status(500).json({ error: "Conversion failed", details: error });
+    }
+    
+    // Save the converted file
+    const outputPath = `./converted_${Date.now()}.docx`;
+    fs.writeFileSync(outputPath, data);
+    
+    console.log("✅ PDF to Word conversion successful");
+    res.json({ 
+      message: "Conversion successful", 
+      outputFile: path.basename(outputPath),
+      size: data.length 
+    });
+  });
+});
+
+// Convert Word to PDF
+app.post("/api/convert/word-to-pdf", (req, res) => {
+  const { fileName } = req.body;
+  if (!fileName) {
+    return res.status(400).json({ error: "Missing fileName in body" });
+  }
+
+  let inputFile;
+  try {
+    inputFile = fs.readFileSync(`./${fileName}`);
+  } catch (err) {
+    console.error("❌ File read error:", err.message);
+    return res.status(404).json({ error: "File not found" });
+  }
+
+  convertDocApi.convertDocumentDocxToPdf(inputFile, (error, data) => {
+    if (error) {
+      console.error("❌ Word to PDF conversion error:", error);
+      return res.status(500).json({ error: "Conversion failed", details: error });
+    }
+    
+    // Save the converted file
+    const outputPath = `./converted_${Date.now()}.pdf`;
+    fs.writeFileSync(outputPath, data);
+    
+    console.log("✅ Word to PDF conversion successful");
+    res.json({ 
+      message: "Conversion successful", 
+      outputFile: path.basename(outputPath),
+      size: data.length 
+    });
+  });
+});
+
+// Convert HTML to PDF
+app.post("/api/convert/html-to-pdf", (req, res) => {
+  const { htmlContent } = req.body;
+  if (!htmlContent) {
+    return res.status(400).json({ error: "Missing htmlContent in body" });
+  }
+
+  const request = {
+    Html: htmlContent
+  };
+
+  convertWebApi.convertWebHtmlToPdf(request, (error, data) => {
+    if (error) {
+      console.error("❌ HTML to PDF conversion error:", error);
+      return res.status(500).json({ error: "Conversion failed", details: error });
+    }
+    
+    // Save the converted file
+    const outputPath = `./converted_${Date.now()}.pdf`;
+    fs.writeFileSync(outputPath, data);
+    
+    console.log("✅ HTML to PDF conversion successful");
+    res.json({ 
+      message: "Conversion successful", 
+      outputFile: path.basename(outputPath),
+      size: data.length 
+    });
+  });
+});
+
+// ====== DOCUMENT EDITING ENDPOINTS ======
+
+// Add watermark to PDF
+app.post("/api/edit/pdf-watermark", (req, res) => {
+  const { fileName, watermarkText } = req.body;
+  if (!fileName || !watermarkText) {
+    return res.status(400).json({ error: "Missing fileName or watermarkText in body" });
+  }
+
+  let inputFile;
+  try {
+    inputFile = fs.readFileSync(`./${fileName}`);
+  } catch (err) {
+    console.error("❌ File read error:", err.message);
+    return res.status(404).json({ error: "File not found" });
+  }
+
+  const request = {
+    WatermarkText: watermarkText,
+    FontName: "Arial",
+    FontSize: 12,
+    FontColor: "#999999",
+    FontTransparency: 0.5
+  };
+
+  editDocApi.editDocumentPdfSetMetadata(inputFile, request, (error, data) => {
+    if (error) {
+      console.error("❌ PDF watermark error:", error);
+      return res.status(500).json({ error: "Watermark failed", details: error });
+    }
+    
+    // Save the edited file
+    const outputPath = `./watermarked_${Date.now()}.pdf`;
+    fs.writeFileSync(outputPath, data);
+    
+    console.log("✅ PDF watermark successful");
+    res.json({ 
+      message: "Watermark added successfully", 
+      outputFile: path.basename(outputPath),
+      size: data.length 
+    });
+  });
+});
+
+// ====== AI/NLP ENDPOINTS ======
+
+// Language Detection
+app.post("/api/nlp/detect-language", (req, res) => {
+  const { text } = req.body;
+  if (!text) {
+    return res.status(400).json({ error: "Missing text in body" });
+  }
+
+  const request = {
+    TextToDetect: text
+  };
+
+  nlpApi.languageDetectionGetLanguage(request, (error, data) => {
+    if (error) {
+      console.error("❌ Language detection error:", error);
+      return res.status(500).json({ error: "Language detection failed", details: error });
+    }
+    
+    console.log("✅ Language detection successful:", data);
+    res.json(data);
+  });
+});
+
+// Sentiment Analysis
+app.post("/api/nlp/sentiment-analysis", (req, res) => {
+  const { text } = req.body;
+  if (!text) {
+    return res.status(400).json({ error: "Missing text in body" });
+  }
+
+  const request = {
+    TextToAnalyze: text
+  };
+
+  sentimentApi.sentimentAnalysisSentiment(request, (error, data) => {
+    if (error) {
+      console.error("❌ Sentiment analysis error:", error);
+      return res.status(500).json({ error: "Sentiment analysis failed", details: error });
+    }
+    
+    console.log("✅ Sentiment analysis successful:", data);
+    res.json(data);
+  });
+});
+
+// Entity Extraction
+app.post("/api/nlp/extract-entities", (req, res) => {
+  const { text } = req.body;
+  if (!text) {
+    return res.status(400).json({ error: "Missing text in body" });
+  }
+
+  const request = {
+    TextToExtract: text
+  };
+
+  extractApi.extractEntitiesPost(request, (error, data) => {
+    if (error) {
+      console.error("❌ Entity extraction error:", error);
+      return res.status(500).json({ error: "Entity extraction failed", details: error });
+    }
+    
+    console.log("✅ Entity extraction successful:", data);
+    res.json(data);
+  });
+});
+
+// ====== COMBINED WORKFLOW ENDPOINT ======
+
+// OCR + NLP Analysis
+app.post("/api/ocr-nlp", (req, res) => {
+  const { imageName } = req.body;
+  if (!imageName) {
+    return res.status(400).json({ error: "Missing imageName in body" });
+  }
+
+  let imageFile;
+  try {
+    imageFile = fs.readFileSync(`./${imageName}`);
+  } catch (err) {
+    console.error("❌ File read error:", err.message);
+    return res.status(404).json({ error: "Image file not found" });
+  }
+
+  const opts = {
+    recognitionMode: "Advanced",
+    language: "ENG",
+    preprocessing: "Auto",
+  };
+
+  // First, perform OCR
+  ocrApi.imageOcrPost(imageFile, opts, (ocrError, ocrData) => {
+    if (ocrError) {
+      console.error("❌ OCR Error:", ocrError);
+      return res.status(500).json({ error: "OCR failed", details: ocrError });
+    }
+
+    const extractedText = ocrData.TextResult || "";
+    
+    // Then, perform sentiment analysis on extracted text
+    const sentimentRequest = { TextToAnalyze: extractedText };
+    
+    sentimentApi.sentimentAnalysisSentiment(sentimentRequest, (sentimentError, sentimentData) => {
+      if (sentimentError) {
+        console.error("❌ Sentiment analysis error:", sentimentError);
+        return res.status(500).json({ error: "Sentiment analysis failed", details: sentimentError });
+      }
+
+      console.log("✅ OCR + NLP analysis successful");
+      res.json({
+        ocr: ocrData,
+        sentiment: sentimentData,
+        extractedText: extractedText
+      });
+    });
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`📄 Document Conversion APIs available`);
+  console.log(`✏️ Document Editing APIs available`);
+  console.log(`🤖 AI/NLP APIs available`);
+});
+
+
+//Example usage:
+# Convert PDF to Word
+curl -X POST http://localhost:3000/api/convert/pdf-to-word \
+  -H "Content-Type: application/json" \
+  -d '{"fileName": "document.pdf"}'
+
+# Sentiment Analysis
+curl -X POST http://localhost:3000/api/nlp/sentiment-analysis \
+  -H "Content-Type: application/json" \
+  -d '{"text": "I love this amazing product!"}'
+
+# OCR + NLP combined
+curl -X POST http://localhost:3000/api/ocr-nlp \
+  -H "Content-Type: application/json" \
+  -d '{"imageName": "sample.png"}'

@@ -31,6 +31,8 @@ class HeaderTwo extends StatelessWidget {
           ),
           Text(
             screenName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: AppColors.black,
               fontSize: 20.sp,
