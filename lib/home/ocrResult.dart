@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:free_ocr/constants/app_colors.dart';
-import 'package:free_ocr/widgets/backButton.dart';
+import 'package:free_ocr/widgets/newHeader.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
@@ -64,6 +64,11 @@ class _OCRResultState extends State<OCRResult> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomHeader(
+        screenName: 'OCR Result',
+        onBack: Get.back,
+        onMore: () => print("More Options Coming Soon!!"),
+      ),
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
@@ -72,12 +77,6 @@ class _OCRResultState extends State<OCRResult> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HeaderTwo(
-                  screenName: 'OCR Result',
-                  onBack: Get.back,
-                  onMore: () => print("More Options Coming Soon!!"),
-                ),
-                SizedBox(height: 16.h),
                 _loading
                     ? Center(child: CircularProgressIndicator())
                     : Container(

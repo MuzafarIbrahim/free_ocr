@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
     _splashAnimation = SplashAnimationController(this);
 
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offNamed('/home');
+      Get.offNamed('/info');
     });
   }
 
@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen>
               const Spacer(),
               Text(
                 textAlign: TextAlign.center,
-                "Made with ❤️by Muzafar Ibrahim",
+                "Made with ❤️\nMuzafar Ibrahim\nVersion 1.0.0",
                 style: TextStyle(fontSize: 12.sp),
               ),
               SizedBox(height: 10.h),

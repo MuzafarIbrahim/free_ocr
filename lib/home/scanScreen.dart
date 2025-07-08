@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:free_ocr/constants/app_colors.dart';
-import 'package:free_ocr/widgets/backButton.dart';
-import 'package:free_ocr/widgets/ocrResult.dart';
+import 'package:free_ocr/widgets/newHeader.dart';
+import 'package:free_ocr/home/ocrResult.dart';
 import 'package:get/route_manager.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,6 +44,11 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomHeader(
+        screenName: _imageFile != null ? 'Image Uploaded' : '',
+        onBack: Get.back,
+        onMore: () => print("More Options Coming Soon!!"),
+      ),
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -53,12 +58,6 @@ class _ScanScreenState extends State<ScanScreen> {
               //crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (_imageFile == null) ...[
-                  HeaderTwo(
-                    screenName: 'Scan',
-                    onBack: Get.back,
-                    onMore: () => print("More Options Coming Soon!!"),
-                  ),
-                  SizedBox(height: 16.h),
                   Icon(
                     HugeIcons.strokeRoundedScanImage,
                     color: AppColors.primaryRed,
@@ -69,7 +68,7 @@ class _ScanScreenState extends State<ScanScreen> {
                     "Scan/Upload Image",
                     style: TextStyle(
                       color: AppColors.black,
-                      fontSize: 20.sp,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -78,8 +77,8 @@ class _ScanScreenState extends State<ScanScreen> {
                     "This lets you scan or upload an image and extract text from it. You can copy full or a part of text and paste it anywhere.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 12.sp,
+                      color: AppColors.black.withOpacity(0.5),
+                      fontSize: 10.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -112,8 +111,8 @@ class _ScanScreenState extends State<ScanScreen> {
                               "Scan Document",
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -165,18 +164,24 @@ class _ScanScreenState extends State<ScanScreen> {
                               "Upload Image From Gallery",
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             SizedBox(height: 6.h),
-                            Text(
-                              "Note: The image size should not be more than 10 MB.\nOnly PNG, JPG, JPEG, HEIC formats are allowed.",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w400,
+                            Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                horizontal: 12.w,
+                                //vertical: 4.h,
+                              ),
+                              child: Text(
+                                "Note: The image size should not be more than 10 MB.\nOnly PNG, JPG, JPEG, HEIC formats are allowed.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ],
@@ -199,68 +204,89 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                   Row(
                     children: [
-                      Text(
-                        "1. Tap Scan to capture with your camera."
-                        "\n2. Tap Upload to choose an existing image."
-                        "\n3. Make sure text is clear and well-lit."
-                        "\n4. We'll extract the text for you automatically.",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: AppColors.black,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Text(
+                          "-> We do not collect or store your personal data."
+                          "\n-> We need gallery and file access only to process your selected images or documents."
+                          "\n-> Your files stay on your device and are used solely for text extraction."
+                          "\n-> We prioritize your privacy and security in every step of the process.",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ] else ...[
-                  HeaderTwo(
-                    screenName: 'Scanned',
-                    onBack: Get.back,
-                    onMore: () => print("More Options Coming Soon!!"),
-                  ),
-                  SizedBox(height: 16.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: Container(
-                      width: double.infinity,
-                      //height: 500,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.black.withOpacity(0.5),
-                          width: 2.5,
-                        ),
-                      ),
-                      child: Image.file(_imageFile!, fit: BoxFit.contain),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.to(
-                          () => OCRResult(imageFile: _imageFile!),
-                          transition: Transition.fadeIn,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryRed,
-                        foregroundColor: AppColors.white,
-                        minimumSize: Size(200.w, 50.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                      ),
-                      child: Text(
-                        "Extract Text",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  Container(
+                    width: double.infinity,
+                    //height: 500,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.black.withOpacity(0.5),
+                        width: 2.5,
                       ),
                     ),
+                    child: Image.file(_imageFile!, fit: BoxFit.contain),
+                  ),
+                  SizedBox(height: 16.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          pickImageFromGallery;
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.background,
+                          foregroundColor: AppColors.primaryRed,
+                          minimumSize: Size(160.w, 30.h),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: AppColors.primaryRed.withOpacity(0.9),
+                              width: 1.w,
+                              style: BorderStyle.solid,
+                            ),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                        ),
+                        child: Text(
+                          "Change Image",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.to(
+                            () => OCRResult(imageFile: _imageFile!),
+                            transition: Transition.fadeIn,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryRed,
+                          foregroundColor: AppColors.white,
+                          minimumSize: Size(160.w, 30.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                        ),
+                        child: Text(
+                          "Extract Text",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ],

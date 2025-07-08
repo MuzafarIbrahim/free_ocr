@@ -2,6 +2,7 @@ import 'package:free_ocr/home/askScreen.dart';
 import 'package:free_ocr/home/convertScreen.dart';
 import 'package:free_ocr/home/editScreen.dart';
 import 'package:free_ocr/home/homeScreen.dart';
+import 'package:free_ocr/home/infoScreen.dart';
 import 'package:free_ocr/home/scanScreen.dart';
 import 'package:free_ocr/splash/splash.dart';
 import 'package:get/route_manager.dart';
@@ -36,5 +37,10 @@ final List<GetPage> appPages = [
     name: '/askAI',
     page: () => AskScreen(),
     transition: Transition.cupertino,
+  ),
+  GetPage(
+    name: '/info',
+    page: () => InfoScreen(),
+    transition: Transition.fadeIn,
   ),
 ];

@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:free_ocr/constants/app_colors.dart';
 import 'package:free_ocr/controllers/getXController.dart';
-import 'package:free_ocr/widgets/customHeader.dart';
-import 'package:free_ocr/widgets/dialogBox.dart';
 import 'package:free_ocr/widgets/featureTile.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,34 +15,60 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showDialog();
-    });
-  }
-
-  void _showDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => DialogBox(),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     final userController = Get.find<UserController>();
     return Scaffold(
+      appBar: AppBar(
+        leadingWidth: double.infinity,
+        toolbarHeight: 50.h,
+        elevation: 0,
+        backgroundColor: AppColors.background,
+        leading: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Free",
+                      style: TextStyle(color: AppColors.textDark),
+                    ),
+                    TextSpan(
+                      text: "OCR",
+                      style: TextStyle(color: AppColors.primaryRed),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  print("Profile tapped!");
+                },
+                child: Icon(
+                  HugeIcons.strokeRoundedUserCircle02,
+                  color: AppColors.primaryRed,
+                  size: 20.sp,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomHeader(onProfileTap: () => print("Profile tapped")),
-              SizedBox(height: 40.h),
+              SizedBox(height: 30.h),
               Obx(
                 () => RichText(
                   text: TextSpan(
@@ -108,6 +131,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     desc: "Summarise, Finish Writing, Improve, and more!!",
                   ),
                 ],
+              ),
+              SizedBox(height: 8.h),
+              Divider(
+                color: AppColors.primaryRed.withOpacity(0.7),
+                radius: BorderRadius.circular(20.r),
+                thickness: 3.0,
+                indent: 15.w,
+                endIndent: 15.w,
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                "Recents",
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

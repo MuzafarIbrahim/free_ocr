@@ -5,4 +5,5 @@ class Routes {
   static const String editScreen = '/editor';
   static const String convertScreen = '/convertor';
   static const String askAiScreen = '/askAI';
+  static const String infoScreen = '/info';
 }
