@@ -1,16 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:free_ocr/constants/app_colors.dart';
+import 'package:free_ocr/controllers/getXController.dart';
 import 'package:free_ocr/widgets/customHeader.dart';
+import 'package:free_ocr/widgets/dialogBox.dart';
 import 'package:free_ocr/widgets/featureTile.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showDialog();
+    });
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => DialogBox(),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final userController = Get.find<UserController>();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -21,29 +46,32 @@ class HomeScreen extends StatelessWidget {
             children: [
               CustomHeader(onProfileTap: () => print("Profile tapped")),
               SizedBox(height: 40.h),
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 30.sp,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.0,
+              Obx(
+                () => RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.0,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "Hi, ",
+                        style: TextStyle(color: AppColors.textDark),
+                      ),
+                      TextSpan(
+                        text: userController.userName.value,
+                        style: TextStyle(color: AppColors.primaryRed),
+                      ),
+                      TextSpan(
+                        text: "\nHow can I help\nyou today?",
+                        style: TextStyle(color: AppColors.textDark),
+                      ),
+                    ],
                   ),
-                  children: [
-                    TextSpan(
-                      text: "Hi, ",
-                      style: TextStyle(color: AppColors.textDark),
-                    ),
-                    TextSpan(
-                      text: "Muzafar!!",
-                      style: TextStyle(color: AppColors.primaryRed),
-                    ),
-                    TextSpan(
-                      text: "\nHow can I help\nyou today?",
-                      style: TextStyle(color: AppColors.textDark),
-                    ),
-                  ],
                 ),
               ),
+
               SizedBox(height: 30.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

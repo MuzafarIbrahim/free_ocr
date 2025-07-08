@@ -33,16 +33,11 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> captureImage() async {
-    try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-      if (photo != null) {
-        setState(() {
-          _imageFile = File(photo.path);
-        });
-        await uploadImage(_imageFile!);
-      }
-    } catch (e) {
-      print('Error capturing image: $e');
+    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      setState(() {
+        _imageFile = File(photo.path);
+      });
     }
   }
 
