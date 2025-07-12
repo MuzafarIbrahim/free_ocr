@@ -96,43 +96,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               SizedBox(height: 30.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FeatureTile(
-                    onTap: () => Get.toNamed('/scanner'),
-                    icon: HugeIcons.strokeRoundedScanImage,
-                    title: "Scan",
-                    desc: "Document, ID cards, Images, and much more!!",
-                  ),
-                  FeatureTile(
-                    onTap: () => Get.toNamed('/editor'),
-                    icon: HugeIcons.strokeRoundedNoteEdit,
-                    title: "Edit",
-                    desc: "Sign, Add text, Mark, Delete text, highlight etc.",
-                  ),
-                ],
+              FeatureTile(
+                onTap: () => Get.toNamed('/scanner'),
+                icon: HugeIcons.strokeRoundedScanImage,
+                title: "Scan",
+                desc: "Document, ID cards, Images, and much more!!",
               ),
-              SizedBox(height: 8.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FeatureTile(
-                    onTap: () => Get.toNamed('/convertor'),
-                    icon: HugeIcons.strokeRoundedArrowDataTransferHorizontal,
-                    title: "Convert",
-                    desc: "PDF, DOCX, JPG, PNG, PPT, XLSX, DOC, etc.",
-                  ),
+              SizedBox(height: 10.h),
+              FeatureTile(
+                onTap: () => Get.toNamed('/convertor'),
+                icon: HugeIcons.strokeRoundedArrowDataTransferHorizontal,
+                title: "Convert",
+                desc: "PDF, DOCX, JPG, PNG, PPT, XLSX, DOC, etc.",
+              ),
 
-                  FeatureTile(
-                    onTap: () => Get.toNamed('/askAI'),
-                    icon: HugeIcons.strokeRoundedMagicWand01,
-                    title: "Ask AI",
-                    desc: "Summarise, Finish Writing, Improve, and more!!",
-                  ),
-                ],
-              ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 20.h),
               Divider(
                 color: AppColors.primaryRed.withOpacity(0.7),
                 radius: BorderRadius.circular(20.r),
