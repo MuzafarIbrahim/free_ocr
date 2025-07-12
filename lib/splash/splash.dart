@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:free_ocr/constants/app_colors.dart';
 import 'package:free_ocr/controllers/animationController.dart';
+import 'package:free_ocr/controllers/getXController.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 
@@ -21,8 +23,15 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _splashAnimation = SplashAnimationController(this);
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offNamed('/info');
+    Future.delayed(const Duration(seconds: 3), () async {
+      final userController = Get.find<UserController>();
+      final isFirstTime = await userController.isFirstTimer();
+
+      if (isFirstTime) {
+        Get.offNamed('/info'); // Go to info screen for first time users
+      } else {
+        Get.offNamed('/home'); // Go directly to home for returning users
+      }
     });
   }
 

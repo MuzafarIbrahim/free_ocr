@@ -5,6 +5,7 @@ import 'package:free_ocr/controllers/getXController.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
@@ -13,12 +14,22 @@ class InfoScreen extends StatefulWidget {
   State<InfoScreen> createState() => _InfoScreenState();
 }
 
-class _InfoScreenState extends State<InfoScreen> {
+class _InfoScreenState extends State<InfoScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _ageController = TextEditingController();
 
   bool _isChecked = false;
+
+  //method to save user data to Sharedpreferences
+  Future<void> _saveUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', _nameController.text.trim());
+    await prefs.setString('user_email', _emailController.text.trim());
+    await prefs.setString('user_age', _ageController.text.trim());
+    await prefs.setBool('is_first_time', false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +134,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                   decoration: InputDecoration(
-                    labelText: "Age",
+                    labelText: "Date of Birth",
                     hintText: "DD/MM/YYYY",
                     floatingLabelStyle: TextStyle(color: AppColors.primaryRed),
                     enabledBorder: OutlineInputBorder(
@@ -175,13 +186,17 @@ class _InfoScreenState extends State<InfoScreen> {
               SizedBox(height: 20.h),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_isChecked) {
+                  onPressed: () async {
+                    if (_isChecked && _nameController.text.trim().isNotEmpty) {
+                      //save user data to sharedpreferences
+                      await _saveUserData();
+
+                      //show success message
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: AppColors.primaryRed,
                           content: Text(
-                            "Welcome ${_nameController.text}, & Thank you for accepting our terms.",
+                            "Welcome ${_nameController.text}, Thanks for accepting our terms",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 12.sp,
@@ -190,18 +205,21 @@ class _InfoScreenState extends State<InfoScreen> {
                           ),
                         ),
                       );
-                      Get.toNamed('/home');
                       Get.find<UserController>().setUserData(
                         newName: _nameController.text.trim(),
                         newEmail: _emailController.text.trim(),
                         newAge: _ageController.text.trim(),
                       );
+                      //get to home and remove this screen from the stack
+                      Get.offNamed('/home');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: AppColors.primaryRed,
                           content: Text(
-                            "${_nameController.text} please accept our terms.",
+                            _nameController.text.trim().isEmpty
+                                ? "Please enter your name & accept our terms"
+                                : "Dear ${_nameController.text} please accept our terms.",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 12.sp,
