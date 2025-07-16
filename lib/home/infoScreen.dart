@@ -183,7 +183,7 @@ class _InfoScreenState extends State<InfoScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 10.h),
               Center(
                 child: ElevatedButton(
                   onPressed: () async {

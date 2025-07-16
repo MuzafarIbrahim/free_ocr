@@ -1,0 +1,16 @@
+final List<Map<String, String>> conversionOptions = [
+  { "label": "PDF to Word", "endpoint": "/api/convert/pdf-to-word" },
+  { "label": "Word to PDF", "endpoint": "/api/convert/word-to-pdf" },
+  { "label": "PDF to PowerPoint", "endpoint": "/api/convert/pdf-to-ppt" },
+  { "label": "PowerPoint to PDF", "endpoint": "/api/convert/ppt-to-pdf" },
+  { "label": "Excel to PDF", "endpoint": "/api/convert/excel-to-pdf" },
+  { "label": "Text to PDF", "endpoint": "/api/convert/text-to-pdf" },
+  { "label": "RTF to PDF", "endpoint": "/api/convert/rtf-to-pdf" },
+  { "label": "HTML to PDF", "endpoint": "/api/convert/html-to-pdf" },
+  { "label": "Word to HTML", "endpoint": "/api/convert/word-to-html" },
+  { "label": "Word to Text", "endpoint": "/api/convert/word-to-text" },
+  { "label": "Excel to CSV", "endpoint": "/api/convert/excel-to-csv" },
+  { "label": "Excel to HTML", "endpoint": "/api/convert/excel-to-html" },
+  { "label": "PowerPoint to PNG", "endpoint": "/api/convert/ppt-to-png" },
+  { "label": "PDF to Text", "endpoint": "/api/convert/pdf-to-text" },
+];
