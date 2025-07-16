@@ -31,7 +31,7 @@ class FeatureTile extends StatelessWidget {
         ],
         child: Container(
           width: double.infinity,
-          height: 70.h,
+          height: 60.h,
           padding: EdgeInsets.all(12.dg),
           decoration: BoxDecoration(
             color: AppColors.white,

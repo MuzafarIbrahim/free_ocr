@@ -47,16 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  print("Profile tapped!");
-                },
-                child: Icon(
-                  HugeIcons.strokeRoundedUserCircle02,
-                  color: AppColors.primaryRed,
-                  size: 20.sp,
-                ),
-              ),
             ],
           ),
         ),
@@ -68,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 30.h),
+              SizedBox(height: 50.h),
               Obx(
                 () => RichText(
                   text: TextSpan(
@@ -95,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              SizedBox(height: 30.h),
+              SizedBox(height: 40.h),
               FeatureTile(
                 onTap: () => Get.toNamed('/scanner'),
                 icon: HugeIcons.strokeRoundedScanImage,
@@ -112,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               SizedBox(height: 20.h),
               Divider(
-                color: AppColors.primaryRed.withOpacity(0.7),
+                color: AppColors.primaryRed,
                 radius: BorderRadius.circular(20.r),
                 thickness: 3.0,
                 indent: 15.w,

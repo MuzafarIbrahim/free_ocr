@@ -47,7 +47,9 @@ class _ScanScreenState extends State<ScanScreen> {
       appBar: CustomHeader(
         screenName: _imageFile != null ? 'Image Uploaded' : '',
         onBack: Get.back,
-        onMore: () => print("More Options Coming Soon!!"),
+        onMore: () {
+          Get.toNamed('/aboutUs');
+        },
       ),
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -233,60 +235,29 @@ class _ScanScreenState extends State<ScanScreen> {
                     child: Image.file(_imageFile!, fit: BoxFit.contain),
                   ),
                   SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          pickImageFromGallery;
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.background,
-                          foregroundColor: AppColors.primaryRed,
-                          minimumSize: Size(160.w, 30.h),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: AppColors.primaryRed.withOpacity(0.9),
-                              width: 1.w,
-                              style: BorderStyle.solid,
-                            ),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                        ),
-                        child: Text(
-                          "Change Image",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.to(
+                        () => OCRResult(imageFile: _imageFile!),
+                        transition: Transition.fadeIn,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryRed,
+                      foregroundColor: AppColors.white,
+                      minimumSize: Size(double.infinity, 30.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.to(
-                            () => OCRResult(imageFile: _imageFile!),
-                            transition: Transition.fadeIn,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryRed,
-                          foregroundColor: AppColors.white,
-                          minimumSize: Size(160.w, 30.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
-                        ),
-                        child: Text(
-                          "Extract Text",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                    ),
+                    child: Text(
+                      "Extract Text",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ],

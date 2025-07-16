@@ -6,4 +6,5 @@ class Routes {
   static const String convertScreen = '/convertor';
   static const String askAiScreen = '/askAI';
   static const String infoScreen = '/info';
+  static const String aboutUsScreen = '/aboutUs';
 }

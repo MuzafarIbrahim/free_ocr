@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,7 +9,9 @@ import 'package:free_ocr/constants/conversionEndpoints.dart';
 import 'package:free_ocr/widgets/newHeader.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
+import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ConvertScreen extends StatefulWidget {
   const ConvertScreen({super.key});
@@ -20,18 +25,73 @@ class _ConvertScreenState extends State<ConvertScreen> {
   String? _selectedFileName;
   String? selectedValue;
   String? selectedLabel;
+  File? selectedFile;
+  bool isLoading = false;
+  String? selectedEndpoint;
+  String? downloadUrl;
 
   void _pickFile() async {
     final result = await FilePicker.platform.pickFiles();
-    FileType.custom;
-    ['png', 'pdf', 'docx', 'xlsx', 'doc'];
-
     if (result != null) {
       final path = result.files.single.path;
       final name = result.files.single.name;
       setState(() {
         _selectedFilePath = path;
         _selectedFileName = name;
+        selectedFile = File(path!);
+      });
+    }
+  }
+
+  final String baseUrl = "http://192.168.100.6:3000";
+  Future<void> convertFile() async {
+    if (selectedFile == null || selectedEndpoint == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select file and format to convert.")),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      downloadUrl = null;
+    });
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl$selectedEndpoint'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath('file', selectedFile!.path),
+      );
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        final respStr = await response.stream.bytesToString();
+        final data = jsonDecode(respStr);
+
+        setState(() {
+          downloadUrl = '$baseUrl${data['downloadUrl']}';
+        });
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Conversion Successful")));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Conversion Failed!!")));
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An Error ocurred, Please try again.")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -42,7 +102,9 @@ class _ConvertScreenState extends State<ConvertScreen> {
       appBar: CustomHeader(
         screenName: '',
         onBack: Get.back,
-        onMore: () => print("More Options Coming Soon!!"),
+        onMore: () {
+          Get.toNamed('/aboutUs');
+        },
       ),
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -143,7 +205,7 @@ class _ConvertScreenState extends State<ConvertScreen> {
                       child: Center(
                         child: Text(
                           _selectedFilePath != null
-                              ? "Selected file: \"$_selectedFileName\""
+                              ? "Selected file: $_selectedFileName"
                               : "No file selected",
                           style: TextStyle(
                             color: AppColors.white,
@@ -160,7 +222,7 @@ class _ConvertScreenState extends State<ConvertScreen> {
                     width: 320.w,
                     height: 50.h,
                     child: DropdownButton<String>(
-                      value: selectedValue,
+                      value: selectedEndpoint,
                       hint: Text("Please select a format to convert"),
                       isExpanded: true,
                       icon: Icon(
@@ -178,7 +240,8 @@ class _ConvertScreenState extends State<ConvertScreen> {
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedValue = value!;
+                          selectedEndpoint = value;
+
                           selectedLabel = conversionOptions.firstWhere(
                             (option) => option['endpoint'] == value,
                           )['label'];
@@ -188,7 +251,7 @@ class _ConvertScreenState extends State<ConvertScreen> {
                   ),
                   SizedBox(height: 10.h),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: isLoading ? null : convertFile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryRed,
                       foregroundColor: AppColors.white,
@@ -198,8 +261,46 @@ class _ConvertScreenState extends State<ConvertScreen> {
                       ),
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
-                    child: Text("Convert to ${selectedValue}"),
+                    child: Text(
+                      "Convert File",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: LinearProgressIndicator(
+                        color: AppColors.primaryRed,
+                        backgroundColor: AppColors.primaryRed.withOpacity(0.5),
+                      ),
+                    ),
+                  if (downloadUrl != null) ...[
+                    SizedBox(height: 10.h),
+                    TextButton(
+                      onPressed: () async {
+                        final uri = Uri.parse(downloadUrl!);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                      child: Text(
+                        "Download Converted File.",
+
+                        style: TextStyle(
+                          color: AppColors.primaryRed,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.primaryRed,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
                 SizedBox(height: 15.h),
                 Row(

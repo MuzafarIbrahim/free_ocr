@@ -30,7 +30,7 @@ class _OCRResultState extends State<OCRResult> {
   }
 
   Future<void> _performOCR() async {
-    final String _serverUrl = "http://localhost:3000/api/ocr-upload";
+    final String _serverUrl = "http://192.168.100.6:3000/api/ocr-upload";
     var request = http.MultipartRequest('POST', Uri.parse(_serverUrl));
     request.files.add(
       await http.MultipartFile.fromPath('image', widget.imageFile.path),
@@ -67,7 +67,9 @@ class _OCRResultState extends State<OCRResult> {
       appBar: CustomHeader(
         screenName: 'OCR Result',
         onBack: Get.back,
-        onMore: () => print("More Options Coming Soon!!"),
+        onMore: () {
+          Get.toNamed('/aboutUs');
+        },
       ),
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -78,7 +80,10 @@ class _OCRResultState extends State<OCRResult> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _loading
-                    ? Center(child: CircularProgressIndicator())
+                    ? Container(
+                        height: 500.h,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
                     : Container(
                         width: double.infinity,
                         height: 300,

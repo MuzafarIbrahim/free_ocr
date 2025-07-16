@@ -13,7 +13,9 @@ class AskScreen extends StatelessWidget {
       appBar: CustomHeader(
         screenName: 'Ask AI',
         onBack: Get.back,
-        onMore: () => print("More Options Coming Soon!!"),
+        onMore: () {
+          Get.toNamed('/aboutUs');
+        },
       ),
       backgroundColor: AppColors.background,
       body: SafeArea(

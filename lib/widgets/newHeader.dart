@@ -43,7 +43,7 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.black,
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -51,7 +51,7 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               onPressed: onMore,
               icon: Icon(
-                HugeIcons.strokeRoundedMoreVerticalCircle01,
+                HugeIcons.strokeRoundedInformationCircle,
                 size: 25.sp,
                 color: AppColors.primaryRed,
               ),

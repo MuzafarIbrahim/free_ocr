@@ -2,6 +2,7 @@ import 'package:free_ocr/home/askScreen.dart';
 import 'package:free_ocr/home/convertScreen.dart';
 import 'package:free_ocr/home/editScreen.dart';
 import 'package:free_ocr/home/homeScreen.dart';
+import 'package:free_ocr/home/aboutScreen.dart';
 import 'package:free_ocr/home/infoScreen.dart';
 import 'package:free_ocr/home/scanScreen.dart';
 import 'package:free_ocr/splash/splash.dart';
@@ -41,6 +42,11 @@ final List<GetPage> appPages = [
   GetPage(
     name: '/info',
     page: () => InfoScreen(),
+    transition: Transition.fadeIn,
+  ),
+  GetPage(
+    name: '/aboutUs',
+    page: () => AboutUsScreen(),
     transition: Transition.fadeIn,
   ),
 ];
